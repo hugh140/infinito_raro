@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvasScr"></canvas>
+
+    <script>
+        const canvas = document.getElementById("canvasScr")
+        const ctx = canvas.getContext('2d')
+
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+
+        class Point //Clase para crear el punto que va a estar renderizándose en pantalla
+        {
+            constructor(x,y,radius) {
+                this.x = x
+                this.y = y
+                this.radius = radius
+
+                this.hCurva = 0
+                this.vCurva = 0
+                this.switchX = false
+            }
+            move() {
+                //Prácticamente, toda la lógica que sigue el dibujo se ubica
+                //en este método
+
+                if (this.hCurva == 0) this.switchX = !this.switchX
+
+                if (this.switchX) 
+                    this.x = (100 * Math.cos(this.hCurva)) + canvas.width/2 - 100
+                else 
+                    this.x = (100 * -Math.cos(this.hCurva)) + canvas.width/2 + 100
+
+                this.y = (100 * Math.sin(this.hCurva)) + canvas.height/2
+
+                if (this.hCurva <= 6.1) this.hCurva += 0.1 //El 6.1 fue necesario para cerrar el ciclo
+                else this.hCurva = 0
+            }
+            draw() {
+                ctx.beginPath()
+                ctx.arc(this.x,this.y,this.radius,0,Math.PI*2)
+                ctx.fill()
+            }
+        }
+
+        const point = new Point(canvas.width/2,canvas.height/2,10)
+
+        const update = () => { //Función para la animación del objeto
+            ctx.save()
+            ctx.fillStyle = 'rgba(255,255,255,0.01)'
+            ctx.fillRect(0,0,canvas.width,canvas.height)
+            ctx.restore()
+
+            point.move()
+            point.draw()
+            requestAnimationFrame(update)
+        }
+        update()
+
+    </script>
+</body>
+</html>
